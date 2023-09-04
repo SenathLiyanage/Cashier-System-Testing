@@ -1,10 +1,21 @@
 # tkinter is a module/container/file which contain classes and methods which help to create GUI.
 from tkinter import *
+# import 'messagebox' from tkinter to display msg box
+from tkinter import messagebox
+# import 'random' module to generate a bill number
+import random
 
-# functionality Part
+# -------functionality Part-------
+
 # define 'total' function. use 'get()' method to get values from entry and stor inside a variable.
 def total():
-    soapprice = int(soapEntry.get())*20
+    # make variables public using 'global' to use them in other methods
+    global soapprice,body_lotionprice,hair_gelprice,hair_sprayprice,face_washprice,face_creamprice
+    global sugarprice,wheatprice,daalprice,oilprice,riceprice,teaprice
+    global cococolaprice,frootiprice,dewprice,spriteprice,pepsiprice,maazaprice
+
+    # Cosmetics
+    soapprice = int(soapEntry.get()) * 20
     face_creamprice = int(face_creamEntry.get()) * 50
     face_washprice = int(face_washEntry.get()) * 100
     hair_sprayprice = int(hair_sprayEntry.get()) * 200
@@ -12,9 +23,112 @@ def total():
     body_lotionprice = int(body_lotionEntry.get()) * 80
 
     total_cosmetic_price = soapprice + face_creamprice + face_washprice + hair_sprayprice + hair_gelprice + body_lotionprice
-    cosmetic_price_Entry.insert(0,total_cosmetic_price)
+    # before enter total value, delete the values inside the entry field using 'delete()' method. 'delete(0,END)' ---> delete from start to end
+    cosmetic_price_Entry.delete(0,END)
+    # convert 'total_cosmetic_price' into string using 'str()' or f'{total_cosmetic_price} Rs'
+    cosmetic_price_Entry.insert(0,str(total_cosmetic_price)+' Rs')
+    # cosmetic tax calculation
+    cosmetictax = total_cosmetic_price * 0.12
+    cosmetic_tax_Entry.delete(0,END)
+    cosmetic_tax_Entry.insert(0, str(cosmetictax)+ ' Rs')
 
-# GUI Part
+    # Grocery
+    riceprice = int(riceEntry.get()) * 100
+    oilprice = int(oilEntry.get()) * 200
+    daalprice = int(daalEntry.get()) * 150
+    wheatprice = int(wheetEntry.get()) * 80
+    sugarprice = int(sugarEntry.get()) * 50
+    teaprice = int(teaEntry.get()) * 60
+
+    total_grocery_price = riceprice + oilprice + daalprice + wheatprice + sugarprice + teaprice
+    grocery_price_Entry.delete(0,END)
+    grocery_price_Entry.insert(0,str(total_grocery_price)+' Rs')
+    # grocery tax calculation
+    grocerytax = total_grocery_price * 0.15
+    grocery_tax_Entry.delete(0,END)
+    grocery_tax_Entry.insert(0,str(grocerytax)+ ' Rs')
+
+    # Cool Drinks
+    maazaprice = int(maazaEntry.get()) * 60
+    pepsiprice = int(pepsiEntry.get()) * 100
+    spriteprice = int(spriteEntry.get()) * 70
+    dewprice = int(dewEntry.get()) * 60
+    frootiprice = int(frootiEntry.get()) * 80
+    cococolaprice = int(coco_colaEntry.get()) * 100
+
+    total_cool_drink_price = maazaprice + pepsiprice + spriteprice + dewprice + frootiprice + cococolaprice
+    drink_price_Entry.delete(0,END)
+    drink_price_Entry.insert(0,str(total_cool_drink_price)+ ' Rs')
+    # cool drinks tax calculation
+    drinkstax = total_cool_drink_price * 0.08
+    drink_tax_Entry.delete(0,END)
+    drink_tax_Entry.insert(0,str(drinkstax)+ ' Rs')
+
+# the bill button functions
+
+# define 'billnumber' variable and pass the values of starting number(500) and ending number(1000). Random value between 500 to 1000
+billnumber = random.randint(500,1000)
+def bill_area():
+    # msg box for enter customer details if the field is empty
+    #if nameEntry.get() == '' or phoneEntry.get() == '':
+        # import tkinter messagebox at the top and use showerror('title','msg') method
+        #messagebox.showerror('Error!','Customer Details Are Required')
+    # use 'and' gate for the  error msg display only when all the entry fields are empty
+    #elif cosmetic_price_Entry.get()=='' and grocery_price_Entry.get()=='' and drink_price_Entry.get()=='':
+        #messagebox.showerror('Error!','Please generate the total field')
+    #elif cosmetic_price_Entry.get()=='0 Rs' and grocery_price_Entry.get()=='0 Rs' and drink_price_Entry.get()=='0 Rs':
+        #messagebox.showerror('Error!','Please select minimum one product')
+    #else
+        # use '\t' for tab spaces. '\n' to line break
+        textarea.insert(END,('\t\t*** Welcome Customer! ***\n\n'))
+        textarea.insert(END,f'Bill Number: {billnumber}\n')
+        textarea.insert(END,f'Customer Name: {nameEntry.get()}\n')
+        textarea.insert(END,f'Customer Phone Number: {phoneEntry.get()}\n')
+        textarea.insert(END,f'=======================================================\n')
+        textarea.insert(END,f'Product\t\t\tQuantity\t\t\tPrice\n')
+        textarea.insert(END,f'=======================================================\n')
+        if soapEntry.get()!='0':
+            textarea.insert(END,f'Bath Soap\t\t\t{soapEntry.get()}\t\t\tRs.{soapprice}\n')
+        if face_creamEntry.get()!='0':
+            textarea.insert(END, f'Face Cream\t\t\t{face_creamEntry.get()}\t\t\tRs.{face_creamprice}\n')
+        if face_washEntry.get()!='0':
+            textarea.insert(END, f'Face Wash\t\t\t{face_washEntry.get()}\t\t\tRs.{face_washprice}\n')
+        if hair_sprayEntry.get()!='0':
+            textarea.insert(END, f'Hair Spray\t\t\t{hair_sprayEntry.get()}\t\t\tRs.{hair_sprayprice}\n')
+        if hair_gelEntry.get()!='0':
+            textarea.insert(END, f'Hair Gel\t\t\t{hair_gelEntry.get()}\t\t\tRs.{hair_gelprice}\n')
+        if body_lotionEntry.get()!='0':
+            textarea.insert(END, f'Body Lotion\t\t\t{body_lotionEntry.get()}\t\t\tRs.{body_lotionprice}\n')
+        textarea.insert(END, f'-------------------------------------------------------\n')
+        if riceEntry.get()!='0':
+            textarea.insert(END, f'Rice\t\t\t{riceEntry.get()}\t\t\tRs.{riceprice}\n')
+        if oilEntry.get()!='0':
+            textarea.insert(END, f'Oil\t\t\t{oilEntry.get()}\t\t\tRs.{oilprice}\n')
+        if daalEntry.get()!='0':
+            textarea.insert(END, f'Daal\t\t\t{daalEntry.get()}\t\t\tRs.{daalprice}\n')
+        if wheetEntry.get()!='0':
+            textarea.insert(END, f'Wheat\t\t\t{wheetEntry.get()}\t\t\tRs.{wheatprice}\n')
+        if sugarEntry.get()!='0':
+            textarea.insert(END, f'Sugar\t\t\t{sugarEntry.get()}\t\t\tRs.{sugarprice}\n')
+        if teaEntry.get()!='0':
+            textarea.insert(END, f'Tea\t\t\t{teaEntry.get()}\t\t\tRs.{teaprice}\n')
+        textarea.insert(END, f'-------------------------------------------------------\n')
+        if maazaEntry.get()!='0':
+            textarea.insert(END, f'Maaza\t\t\t{maazaEntry.get()}\t\t\tRs.{maazaprice}\n')
+        if pepsiEntry.get()!='0':
+            textarea.insert(END, f'Pepsi\t\t\t{pepsiEntry.get()}\t\t\tRs.{pepsiprice}\n')
+        if spriteEntry.get()!='0':
+            textarea.insert(END, f'Sprite\t\t\t{spriteEntry.get()}\t\t\tRs.{spriteprice}\n')
+        if dewEntry.get()!='0':
+            textarea.insert(END, f'Dew\t\t\t{dewEntry.get()}\t\t\tRs.{dewprice}\n')
+        if frootiEntry.get()!='0':
+            textarea.insert(END, f'Frooti\t\t\t{frootiEntry.get()}\t\t\tRs.{frootiprice}\n')
+        if coco_colaEntry.get()!='0':
+            textarea.insert(END, f'Coco Cola\t\t\t{coco_colaEntry.get()}\t\t\tRs.{cococolaprice}\n')
+
+
+# ------GUI Part-----
+
 # create a window using TK() class. Assign the class to an object. 'root' is a object name/ window name
 root=Tk()
 # to change the title of the window use 'title()' method
@@ -221,7 +335,7 @@ coco_colaEntry.insert(0,0)
 # -------Bill Area-------
 
 billFrame = Frame(productFrame, bd=8, relief=GROOVE)
-billFrame.grid(row=0, column=3, padx=10)
+billFrame.grid(row=0, column=3, padx=8)
 
 bill_area_Label = Label(billFrame, text='Bill Area', font=('times new roman', 15, 'bold'), bd=7, relief=GROOVE, bg='navy', fg='snow')
 bill_area_Label.pack(fill=X)
@@ -231,7 +345,7 @@ scrollbar = Scrollbar(billFrame, orient=VERTICAL)
 scrollbar.pack(side=RIGHT, fill=Y)
 
 # to create a text area, use 'text()' class. To set the scrollbar with the text area, use 'yscrollcommand=scrollbar.set' command.
-textarea = Text(billFrame, height=15, width=45, yscrollcommand=scrollbar.set)
+textarea = Text(billFrame, height=15, width=56, yscrollcommand=scrollbar.set)
 textarea.pack()
 #set the scrollbar comparatively to the text
 scrollbar.config(command=textarea.yview)
@@ -287,7 +401,7 @@ buttonFrame.grid(row=0, column=4, rowspan=3, padx=5)
 totalButton = Button(buttonFrame, text='Total', font=('arial',16,'bold'), bg='navy', fg='snow', bd=5, width=8, pady=10, command=total)
 totalButton.grid(row=0, column=0, pady=20, padx=5)
 
-billButton = Button(buttonFrame, text='Bill', font=('arial',16,'bold'), bg='navy', fg='snow', bd=5, width=8, pady=10)
+billButton = Button(buttonFrame, text='Bill', font=('arial',16,'bold'), bg='navy', fg='snow', bd=5, width=8, pady=10, command=bill_area)
 billButton.grid(row=0, column=1, pady=20, padx=5)
 
 emailButton = Button(buttonFrame, text='Email', font=('arial',16,'bold'), bg='navy', fg='snow', bd=5, width=8, pady=10)
