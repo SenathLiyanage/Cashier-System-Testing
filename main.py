@@ -2,10 +2,16 @@
 from tkinter import *
 # import 'messagebox' from tkinter to display msg box
 from tkinter import messagebox
-# import 'random' module to generate a bill number
-import random
+# import 'random' module to generate a bill number.
+# import 'os' module to create a folder
+import random,os
 
 # -------functionality Part-------
+
+# if there is no 'bills' folder, then create a folder using 'os' module
+if  not os.path.exists('bills'):
+    # make a folder
+    os.mkdir('bills')
 
 # define 'total' function. use 'get()' method to get values from entry and stor inside a variable.
 def total():
@@ -13,6 +19,7 @@ def total():
     global soapprice,body_lotionprice,hair_gelprice,hair_sprayprice,face_washprice,face_creamprice
     global sugarprice,wheatprice,daalprice,oilprice,riceprice,teaprice
     global cococolaprice,frootiprice,dewprice,spriteprice,pepsiprice,maazaprice
+    global totalbill
 
     # Cosmetics
     soapprice = int(soapEntry.get()) * 20
@@ -26,11 +33,11 @@ def total():
     # before enter total value, delete the values inside the entry field using 'delete()' method. 'delete(0,END)' ---> delete from start to end
     cosmetic_price_Entry.delete(0,END)
     # convert 'total_cosmetic_price' into string using 'str()' or f'{total_cosmetic_price} Rs'
-    cosmetic_price_Entry.insert(0,str(total_cosmetic_price)+' Rs')
+    cosmetic_price_Entry.insert(0,'Rs. '+str(total_cosmetic_price))
     # cosmetic tax calculation
     cosmetictax = total_cosmetic_price * 0.12
     cosmetic_tax_Entry.delete(0,END)
-    cosmetic_tax_Entry.insert(0, str(cosmetictax)+ ' Rs')
+    cosmetic_tax_Entry.insert(0, 'Rs. '+str(cosmetictax))
 
     # Grocery
     riceprice = int(riceEntry.get()) * 100
@@ -42,11 +49,11 @@ def total():
 
     total_grocery_price = riceprice + oilprice + daalprice + wheatprice + sugarprice + teaprice
     grocery_price_Entry.delete(0,END)
-    grocery_price_Entry.insert(0,str(total_grocery_price)+' Rs')
+    grocery_price_Entry.insert(0,'Rs. '+str(total_grocery_price))
     # grocery tax calculation
     grocerytax = total_grocery_price * 0.15
     grocery_tax_Entry.delete(0,END)
-    grocery_tax_Entry.insert(0,str(grocerytax)+ ' Rs')
+    grocery_tax_Entry.insert(0,'Rs. '+str(grocerytax))
 
     # Cool Drinks
     maazaprice = int(maazaEntry.get()) * 60
@@ -58,27 +65,51 @@ def total():
 
     total_cool_drink_price = maazaprice + pepsiprice + spriteprice + dewprice + frootiprice + cococolaprice
     drink_price_Entry.delete(0,END)
-    drink_price_Entry.insert(0,str(total_cool_drink_price)+ ' Rs')
+    drink_price_Entry.insert(0,'Rs. '+str(total_cool_drink_price))
     # cool drinks tax calculation
     drinkstax = total_cool_drink_price * 0.08
     drink_tax_Entry.delete(0,END)
-    drink_tax_Entry.insert(0,str(drinkstax)+ ' Rs')
+    drink_tax_Entry.insert(0,'Rs. '+str(drinkstax))
+
+    totalbill = total_cosmetic_price+total_grocery_price+total_cool_drink_price+cosmetictax+grocerytax+drinkstax
 
 # the bill button functions
 
+def save_bill():
+    global billnumber
+    # 'askyesno()' method will return tru or false. That return will store result variable
+    result = messagebox.askyesno('Confirm','Do you want to save the bill?')
+    # 'if result' = the condition is true following code will executed
+    if result:
+        # get every thing in the text area (1.0 to end) and save it in the 'bill_content' area
+        bill_content = textarea.get(1.0,END)
+        # then write the bill_content into a file (File name is 'file'). Open 'bills' folder and save the file with the bill number in write mode ('w').
+        file = open(f'bills/ {billnumber}.txt','w')
+        # use 'write()' method to write the bill
+        file.write(bill_content)
+        # close the file when content is returned using 'close()' method
+        file.close()
+        # show a msg box when the save is success
+        messagebox.showinfo('Success',f'Bill number {billnumber} is saved successfully')
+        # when saved bill, the bill number must re-new (Bill number do not duplicate)
+        billnumber = random.randint(500, 1000)
+
 # define 'billnumber' variable and pass the values of starting number(500) and ending number(1000). Random value between 500 to 1000
 billnumber = random.randint(500,1000)
+
 def bill_area():
     # msg box for enter customer details if the field is empty
-    #if nameEntry.get() == '' or phoneEntry.get() == '':
+    if nameEntry.get() == '' or phoneEntry.get() == '':
         # import tkinter messagebox at the top and use showerror('title','msg') method
-        #messagebox.showerror('Error!','Customer Details Are Required')
+        messagebox.showerror('Error!','Customer Details Are Required')
     # use 'and' gate for the  error msg display only when all the entry fields are empty
-    #elif cosmetic_price_Entry.get()=='' and grocery_price_Entry.get()=='' and drink_price_Entry.get()=='':
-        #messagebox.showerror('Error!','Please generate the total field')
-    #elif cosmetic_price_Entry.get()=='0 Rs' and grocery_price_Entry.get()=='0 Rs' and drink_price_Entry.get()=='0 Rs':
-        #messagebox.showerror('Error!','Please select minimum one product')
-    #else
+    elif cosmetic_price_Entry.get()=='' and grocery_price_Entry.get()=='' and drink_price_Entry.get()=='':
+        messagebox.showerror('Error!','Please generate the total field')
+    elif cosmetic_price_Entry.get()=='Rs. 0' and grocery_price_Entry.get()=='Rs. 0' and drink_price_Entry.get()=='Rs. 0':
+        messagebox.showerror('Error!','Please select minimum one product')
+    else:
+        # delete previous things in the bill before start a new one
+        textarea.delete(1.0,END)
         # use '\t' for tab spaces. '\n' to line break
         textarea.insert(END,('\t\t*** Welcome Customer! ***\n\n'))
         textarea.insert(END,f'Bill Number: {billnumber}\n')
@@ -125,6 +156,41 @@ def bill_area():
             textarea.insert(END, f'Frooti\t\t\t{frootiEntry.get()}\t\t\tRs.{frootiprice}\n')
         if coco_colaEntry.get()!='0':
             textarea.insert(END, f'Coco Cola\t\t\t{coco_colaEntry.get()}\t\t\tRs.{cococolaprice}\n')
+        textarea.insert(END,'-------------------------------------------------------\n')
+
+        if cosmetic_tax_Entry.get()!='0.0 Rs':
+            textarea.insert(END,f'Cosmetic Tax\t\t\t{cosmetic_tax_Entry.get()}\n')
+        if grocery_tax_Entry.get()!='0.0 Rs':
+            textarea.insert(END,f'Grocery Tax\t\t\t{grocery_tax_Entry.get()}\n')
+        if drink_tax_Entry.get()!='0.0 Rs':
+            textarea.insert(END,f'Cool Drinks Tax\t\t\t{drink_tax_Entry.get()}\n\n')
+
+        textarea.insert(END,f'Total Bill\t\t\tRs. {totalbill}\n')
+        textarea.insert(END,'-------------------------------------------------------\n')
+        save_bill()
+
+# command for search button
+def search_bill():
+    for i in os.listdir(f'bills/'):
+        # if the bill number searching is matching with the file name
+        # "i.split('.')" means i value (ex: 741.txt) will split into two by the . mark (741 & txt)
+        # [0] compair the first element of the list
+        if i.split('.')[0] == billEntry.get():
+            # display the content of the bill on the bill area. Open the file in read mode
+            f = open(f'bills/{i}', 'r')
+            # delete everything in the area before display
+            textarea.delete(1.0, END)
+            # enter the content
+            for data in f:
+                textarea.insert(END, data)
+            # close the file
+            f.close()
+            # if the bill successfully displayed, break the loop. So, the else part will not execute
+            break
+
+    # if the entered bill number is not valid
+    else:
+        messagebox.showerror('Error','Invalid Bill Number!')
 
 
 # ------GUI Part-----
@@ -177,7 +243,7 @@ billEntry.grid(row=0, column=5, padx=8)
 
 # search button
 # create buttons using 'button()' class
-searchButton = Button(cus_detail_frame, text='SEARCH', font=('arial', 12, 'bold'), bd=7, width=10)
+searchButton = Button(cus_detail_frame, text='SEARCH', font=('arial', 12, 'bold'), bd=7, width=10, command=search_bill)
 searchButton.grid(row=0, column=6, padx=20, pady=8)
 
 # -------Products Section-------
@@ -345,7 +411,7 @@ scrollbar = Scrollbar(billFrame, orient=VERTICAL)
 scrollbar.pack(side=RIGHT, fill=Y)
 
 # to create a text area, use 'text()' class. To set the scrollbar with the text area, use 'yscrollcommand=scrollbar.set' command.
-textarea = Text(billFrame, height=15, width=56, yscrollcommand=scrollbar.set)
+textarea = Text(billFrame, height=15, width=55, yscrollcommand=scrollbar.set)
 textarea.pack()
 #set the scrollbar comparatively to the text
 scrollbar.config(command=textarea.yview)
