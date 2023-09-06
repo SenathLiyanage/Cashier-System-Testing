@@ -4,7 +4,9 @@ from tkinter import *
 from tkinter import messagebox
 # import 'random' module to generate a bill number.
 # import 'os' module to create a folder
-import random,os
+# improt 'tempfile' module to create a temporal file
+# import 'smptlib' module to send mails
+import random,os,tempfile,smtplib
 
 # -------functionality Part-------
 
@@ -169,6 +171,113 @@ def bill_area():
         textarea.insert(END,'-------------------------------------------------------\n')
         save_bill()
 
+# function to send bill through email
+def send_email():
+    def send_gmail():
+        try:
+            # use 'smtplib' module and 'SMTP()' class
+            # pass the host name (gmail server) and port number in the class
+            ob = smtplib.SMTP('smtp.gmail.com',587)
+            # establish a secure connections using 'starttls()' method from 'SMPT' class
+            ob.starttls()
+            # login to gmail account using 'login()' method by givng email & password (not gmail password)
+            ob.login(senderEntry.get(), passwordEntry.get())
+            # get the msg to send and the email to whom you want to send
+            message = email_textarea.get(1.0,END)
+            # get the email to whom you want to send
+            receiver_address = receiverEntry.get()
+            # send mail using 'sendmail()' method. Enter from address, to address and msg
+            ob.sendmail(senderEntry.get(),receiver_address,message)
+            # if the mail is sent you can quit the connections using 'quit()' method
+            ob.quit()
+            # display a msg box. to show the msg box on the existing screen (Send Gmail) use 'parent=root1'
+            messagebox.showinfo('Success','Email sent successfully', parent=root1)
+            # after sending the bill close the window
+            root1.destroy()
+        except:
+            messagebox.showerror('Error','Something went wrong, Please try again', parent=root1)
+
+    # check weather the text area is empty. '\n'---> the text area is empty.
+    if textarea.get(1.0, END) == '\n':
+        messagebox.showerror('Error', 'Bill area is empty')
+    else:
+        # create a new window. Use 'Toplevel()' class. Also can use 'Tk()' class
+        root1 = Toplevel()
+        # lock under layers
+        root1.grab_set()
+        # change the window name
+        root1.title('Send Gmail')
+        # change background color
+        root1.config(bg='gray20')
+        # make the window fix size using 'resizable()' method. So, cant change the size of move the window
+        root1.resizable(0,0)
+
+        # create the GUI in the root1 window
+        # sender detail label frame
+        senderFrame = LabelFrame(root1, text='SENDER', font=('arial', 16, 'bold'), bg='gray20', fg='snow')
+        senderFrame.grid(row=0, column=0, padx=40, pady=20)
+
+        # gmail section
+        senderLabel = Label(senderFrame, text="Sender's Email", font=('arial', 14, 'bold'), bg='gray20', fg='snow')
+        senderLabel.grid(row=0, column=0, padx=10, pady=8, stick='w')
+        senderEntry = Entry(senderFrame, font=('arial', 15), bd=4, width=23, relief=RIDGE)
+        senderEntry.grid(row=0, column=1, padx=10, pady=8)
+
+        # password section
+        passwordLabel = Label(senderFrame, text="Password", font=('arial', 14, 'bold'), bg='gray20', fg='snow')
+        passwordLabel.grid(row=1, column=0, padx=10, pady=8, stick='w')
+        # use show='*' to hide the preview of password
+        passwordEntry = Entry(senderFrame, font=('arial', 15), bd=4, width=23, relief=RIDGE, show='*')
+        passwordEntry.grid(row=1, column=1, padx=10, pady=8)
+
+        # recipient detail label frame
+        recipientFrame = LabelFrame(root1, text="RECIPIENT", font=('arial', 14, 'bold'), bg='gray20', fg='snow')
+        recipientFrame.grid(row=1, column=0, padx=40, pady=20)
+
+        # receiver section
+        receiverLabel = Label(recipientFrame, text="Email Address", font=('arial', 14, 'bold'), bg='gray20', fg='snow')
+        receiverLabel.grid(row=0, column=0, padx=10, pady=8, stick='w')
+        receiverEntry = Entry(recipientFrame, font=('arial', 15), bd=4, width=23, relief=RIDGE)
+        receiverEntry.grid(row=0, column=1, padx=10, pady=8)
+
+        # bill text area
+        messageLabel = Label(recipientFrame, text="Message", font=('arial', 14, 'bold'), bg='gray20', fg='snow')
+        messageLabel.grid(row=1, column=0, padx=10, pady=8, stick='w')
+
+        email_textarea = Text(recipientFrame, font=('aria',14,'bold'), bd=2, relief=SUNKEN, width=55, height=11)
+        email_textarea.grid(row=2, column=0, columnspan=2, padx=10, pady=10)
+
+        # delete previous things and insert the bill content in the text area
+        email_textarea.delete(1.0,END)
+        # remove the dash marks('-') and one tab space using 'replace()' method
+        email_textarea.insert(END,textarea.get(1.0,END).replace('-','').replace('\t\t\t','\t\t'))
+
+        # send button
+        # provide a command 'send_gmail' and define the function inside 'send_email()'
+        sendButton = Button(root1, text='SEND', font=('arial',16,'bold'), width=15, command=send_gmail)
+        sendButton.grid(row=2, column=0, pady=20)
+
+        # use 'mainloop()' method to see the window continuously
+        root1.mainloop()
+
+
+
+# funtion to print the bill
+def print_bill():
+    # check weather the text area is empty. '\n'---> the text area is empty.
+    if textarea.get(1.0,END)=='\n':
+        messagebox.showerror('Error','Bill area is empty')
+    else:
+        # if the text area is not empty, create temporally file. import 'tempfile' inbuilt module
+        file = tempfile.mktemp('.txt')
+        # open the file in writing mode and write the text area content inside the file
+        open(file,'w').write(textarea.get(1.0,END))
+        # print the file using 'os' module
+        # when the printer is connected the content will print inside 'file' file
+        os.startfile(file,'print')
+
+
+
 # command for search button
 def search_bill():
     for i in os.listdir(f'bills/'):
@@ -193,6 +302,66 @@ def search_bill():
         messagebox.showerror('Error','Invalid Bill Number!')
 
 
+def clear():
+    # delete products
+    soapEntry.delete(0, END)
+    face_washEntry.delete(0, END)
+    face_creamEntry.delete(0, END)
+    hair_gelEntry.delete(0, END)
+    hair_sprayEntry.delete(0, END)
+    body_lotionEntry.delete(0, END)
+
+    riceEntry.delete(0, END)
+    oilEntry.delete(0, END)
+    daalEntry.delete(0, END)
+    wheetEntry.delete(0, END)
+    sugarEntry.delete(0, END)
+    teaEntry.delete(0, END)
+
+    maazaEntry.delete(0, END)
+    pepsiEntry.delete(0, END)
+    spriteEntry.delete(0, END)
+    dewEntry.delete(0, END)
+    frootiEntry.delete(0, END)
+    coco_colaEntry.delete(0, END)
+
+    # insert 0 value
+    soapEntry.insert(0,0)
+    face_washEntry.insert(0, 0)
+    face_creamEntry.insert(0, 0)
+    hair_gelEntry.insert(0, 0)
+    hair_sprayEntry.insert(0, 0)
+    body_lotionEntry.insert(0, 0)
+
+    riceEntry.insert(0, 0)
+    oilEntry.insert(0, 0)
+    daalEntry.insert(0, 0)
+    wheetEntry.insert(0, 0)
+    sugarEntry.insert(0, 0)
+    teaEntry.insert(0, 0)
+
+    maazaEntry.insert(0, 0)
+    pepsiEntry.insert(0, 0)
+    spriteEntry.insert(0, 0)
+    dewEntry.insert(0, 0)
+    frootiEntry.insert(0, 0)
+    coco_colaEntry.insert(0, 0)
+    # total tax entry fields
+    cosmetic_tax_Entry.delete(0, END)
+    grocery_tax_Entry.delete(0, END)
+    drink_tax_Entry.delete(0, END)
+    # total price entry fields
+    cosmetic_price_Entry.delete(0, END)
+    grocery_price_Entry.delete(0, END)
+    drink_price_Entry.delete(0, END)
+    # personal detail entry fields
+    nameEntry.delete(0, END)
+    phoneEntry.delete(0, END)
+    billEntry.delete(0, END)
+    # bill area
+    textarea.delete(1.0,END)
+
+
 # ------GUI Part-----
 
 # create a window using TK() class. Assign the class to an object. 'root' is a object name/ window name
@@ -203,6 +372,8 @@ root.title('Cashier System')
 root.geometry('1300x685')
 # to change/add an icon image use 'iconbitmap('icon_name')' method
 root.iconbitmap('icon.ico')
+# change background color
+root.config(bg='gray20')
 
 # -----Heading------
 
@@ -250,7 +421,7 @@ searchButton.grid(row=0, column=6, padx=20, pady=8)
 
 # create a frame using 'Frame()' class
 productFrame = Frame(root)
-productFrame.pack(fill=X)
+productFrame.pack()
 
 # create a label frame inside the productFrame using 'LabelFrame()'
 cosmeticsFrame = LabelFrame(productFrame, text='Cosmetics', font=('times new roman', 15, 'bold'), bg='navy', fg= 'snow', bd=6, relief=RIDGE)
@@ -470,13 +641,13 @@ totalButton.grid(row=0, column=0, pady=20, padx=5)
 billButton = Button(buttonFrame, text='Bill', font=('arial',16,'bold'), bg='navy', fg='snow', bd=5, width=8, pady=10, command=bill_area)
 billButton.grid(row=0, column=1, pady=20, padx=5)
 
-emailButton = Button(buttonFrame, text='Email', font=('arial',16,'bold'), bg='navy', fg='snow', bd=5, width=8, pady=10)
+emailButton = Button(buttonFrame, text='Email', font=('arial',16,'bold'), bg='navy', fg='snow', bd=5, width=8, pady=10, command=send_email)
 emailButton.grid(row=0, column=2, pady=20, padx=5)
 
-printButton = Button(buttonFrame, text='Print', font=('arial',16,'bold'), bg='navy', fg='snow', bd=5, width=8, pady=10)
+printButton = Button(buttonFrame, text='Print', font=('arial',16,'bold'), bg='navy', fg='snow', bd=5, width=8, pady=10, command=print_bill)
 printButton.grid(row=0, column=3, pady=20, padx=5)
 
-clearButton = Button(buttonFrame, text='Clear', font=('arial',16,'bold'), bg='navy', fg='snow', bd=5, width=8, pady=10)
+clearButton = Button(buttonFrame, text='Clear', font=('arial',16,'bold'), bg='navy', fg='snow', bd=5, width=8, pady=10, command=clear)
 clearButton.grid(row=0, column=4, pady=20, padx=5)
 
 # to see the window continuously/hold the window use 'mainloop()' method inside TK class
