@@ -1,7 +1,6 @@
 # Cashier-System-Testing
 Cashier system using Python Language
 
-
-![Cash![Uploading Cashier system mockup.jpg…]()
-ier dash board ](https://github.com/SenathLiyanage/Cashier-System-Testing/assets/99049759/327792dc-5dd4-481b-9fe4-5439694296b2)
+![Cashier system mockup](https://github.com/SenathLiyanage/Cashier-System-Testing/assets/99049759/d78f7d60-64c0-4629-b56b-875aa4166c34)
+![Cashier dash board ](https://github.com/SenathLiyanage/Cashier-System-Testing/assets/99049759/f5a03d17-00d5-4aa5-a21d-10b3e1cea6bc)
 ![Mail](https://github.com/SenathLiyanage/Cashier-System-Testing/assets/99049759/059dc76f-aed7-4491-8946-ddcc27f63809)
